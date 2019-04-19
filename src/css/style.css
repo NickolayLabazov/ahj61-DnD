@@ -1,0 +1,71 @@
+
+body{
+  text-align: center;
+}
+
+.cardDiv{
+  position: relative;
+  width: 95%;
+  cursor: pointer;
+  border: 1px solid black;
+  padding: 15px;
+  margin: 5px;
+  box-sizing: border-box;
+}
+
+.del{
+  position: absolute;
+  background-color: grey;
+  cursor: default;
+  top: 0;
+  right: 0;
+}
+
+.form{
+  width: 95%;
+  border: 1px solid black;
+  padding: 15px;
+  margin: 5px;
+  box-sizing: border-box;
+}
+
+.buttonDiv{
+  position: relative;
+}
+
+.buttonAdd{
+  background-color: green;
+  color: white;
+  border: 0px; 
+  cursor: pointer; 
+}
+
+.columnDiv{
+  width: 30%;
+  border: 1px solid black;
+  box-sizing: border-box;
+  background-color: white;
+  
+}
+
+.contDiv{
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.addDiv{
+  cursor: pointer;
+}
+
+.textar{
+  width: 95%;
+}
+
+.trolloDiv{
+  width: 100%;
+  display: flex;
+  background-color: blue;
+  padding: 10px;
+  justify-content: space-around;
+
+}
