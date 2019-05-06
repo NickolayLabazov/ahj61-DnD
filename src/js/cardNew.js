@@ -18,7 +18,6 @@ export default class CardNew {
     this.input = document.createElement('textarea');
     this.input.setAttribute('class', 'textar');
     this.input.setAttribute('rows', '8');
-    // this.input.setAttribute('cols', '25');
     const buttonDiv = document.createElement('div');
     buttonDiv.setAttribute('class', 'buttonDiv');
     this.button = document.createElement('button');

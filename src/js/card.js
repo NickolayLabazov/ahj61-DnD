@@ -16,31 +16,41 @@ export default class Card {
     this.cardMove = null;
     this.SiblingMove = null;
     this.moveDo = false;
+    this.textDiv = null;
+    this.space = [];
+    this.spaceListener = null;
+    this.cards = [];
   }
 
   create() {
     this.cardDiv = document.createElement('div');
     this.cardDiv.setAttribute('class', 'cardDiv');
-    this.cardDiv.innerHTML = this.text;
+    this.textDiv = document.createElement('div');
+    this.textDiv.setAttribute('class', 'textDiv');
+    this.textDiv.innerHTML = this.text;
+    this.textDiv.style.pointerEvents = 'none';
+    this.cardDiv.appendChild(this.textDiv);
     this.parent.appendChild(this.cardDiv);
     this.cardDiv.setAttribute('draggable', 'false');
     this.addListener();
+    this.space = [];
   }
 
   addListener() {
     this.cardDiv.addEventListener('mouseenter', () => {
-      if (!this.moveDo) {
-        this.del = document.createElement('div');
-        this.del.setAttribute('class', 'del');
-        this.cardDiv.appendChild(this.del);
-        this.del.innerHTML = '&#10060';
-        this.delListener();
-      }
+      this.del = document.createElement('div');
+      this.del.setAttribute('class', 'del');
+      this.textDiv.style.pointerEvents = 'auto';
+      this.textDiv.appendChild(this.del);
+      this.del.innerHTML = '&#10060';
+      this.delListener();
     });
 
     this.cardDiv.addEventListener('mouseleave', () => {
-      if (!this.moveDo) {
-        this.cardDiv.removeChild(this.del);
+      if (this.moveDo === false) {
+        try { this.del.parentNode.removeChild(this.del); } catch (e) {}
+        this.textDiv.style.pointerEvents = 'none';
+        this.cardDiv.style.paddingTop = '0px';
         document.body.removeEventListener('mousemove', this.move);
         document.body.removeEventListener('mouseup', this.up);
       }
@@ -54,33 +64,42 @@ export default class Card {
 
     this.up = (e) => {
       event.preventDefault();
+      this.textDiv.style.pointerEvents = 'none';
       document.body.removeEventListener('mousemove', this.move);
       this.cardDiv.style.display = 'none';
       const elem = document.elementFromPoint(e.clientX, e.clientY);
       this.cardDiv.style.display = 'block';
-      this.cardDiv.style.position = 'relative';
-      this.cardDiv.style.top = '0px';
-      this.cardDiv.style.left = '0px';
       if (elem.classList.contains('cardDiv')) {
         elem.parentNode.insertBefore(this.cardDiv, elem);
       } else {
-        this.parentMove.insertBefore(this.cardMove, this.SiblingMove);
+        try { this.parentMove.insertBefore(this.cardMove, this.SiblingMove); } catch (error) {
+          this.parentMove.appendChild(this.cardMove);
+        }
       }
+      this.cardDiv.style.pointerEvents = 'auto';
+      this.textDiv.style.pointerEvents = 'none';
+      this.cardDiv.style.position = 'relative';
+      this.cardDiv.style.top = '0px';
+      this.cardDiv.style.left = '0px';
+
       this.parentMove = null;
       this.cardMove = null;
       this.SiblingMove = null;
 
       Trollo.contUpdate();
       this.moveDo = false;
-      this.del = document.createElement('div');
-      this.del.setAttribute('class', 'del');
-      this.cardDiv.appendChild(this.del);
-      this.del.innerHTML = '&#10060';
+      this.cardDiv.style.pointerEvents = 'auto';
+      let i = 0;
+      for (const card of this.cards) {
+        card.removeEventListener('mouseenter', this.space[i]);
+        i += 1;
+      }
+      this.space = [];
     };
     this.down = (e) => {
       event.preventDefault();
       this.moveDo = true;
-      this.cardDiv.removeChild(this.del);
+      this.del.parentNode.removeChild(this.del);
       const width = this.cardDiv.offsetWidth;
       const top = this.cardDiv.offsetTop - 5;
       const left = this.cardDiv.offsetLeft - 5;
@@ -97,8 +116,22 @@ export default class Card {
       this.y = e.clientY - top;
       document.body.addEventListener('mousemove', this.move);
       document.body.addEventListener('mouseup', this.up);
-    };
+      this.cardDiv.style.pointerEvents = 'none';
+      this.textDiv.style.pointerEvents = 'none';
+      this.cards = document.body.querySelectorAll('.cardDiv');
+      let i = 0;
+      for (const card of this.cards) {
+        this.space.push(() => {
+          card.style.paddingTop = `${this.cardDiv.offsetHeight}px`;
+          document.querySelector('.del').parentNode.removeChild(document.querySelector('.del'));
+        });
 
+        if (card !== this.cardDiv) {
+          card.addEventListener('mouseenter', this.space[i]);
+        }
+        i += 1;
+      }
+    };
     this.cardDiv.addEventListener('mousedown', this.down);
   }
 
@@ -106,6 +139,7 @@ export default class Card {
     this.del.addEventListener('click', (e) => {
       e.stopPropagation();
       this.cardDiv.parentNode.removeChild(this.cardDiv);
+      Trollo.contUpdate();
     }, true);
 
     this.del.addEventListener('mouseup', (e) => {

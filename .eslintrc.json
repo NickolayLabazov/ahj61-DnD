@@ -16,6 +16,8 @@
         "import/extensions": "off",
         "import/no-cycle": "off",
         "no-restricted-globals": "off",
+        "no-empty": "off",
+        "nno-shadow": "off",
         "no-restricted-syntax": "off"
         
     }
